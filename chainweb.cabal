@@ -34,7 +34,7 @@ extra-source-files:
 
     -- verifier assets
 
-    assets/plonk/vk.bin
+    verifier-assets/v1.0.8-testnet.bin
 
     -- pact test data
 
