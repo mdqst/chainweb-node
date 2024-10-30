@@ -554,7 +554,7 @@ findNextPeer conf node = do
         --
         peers <- peerDbSnapshotSTM peerDbVar
         !sessions <- readTVar sessionsVar
-        let peerCount = length peers
+        let peerCount = IXS.size peers
         let sessionCount = length sessions
 
         -- Check that there are peers
