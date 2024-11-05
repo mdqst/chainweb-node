@@ -699,7 +699,7 @@ makeGenesisBlockHeader'
 makeGenesisBlockHeader' v p ct@(BlockCreationTime t) n =
     fromLog @ChainwebMerkleHashAlgorithm mlog
   where
-    g = genesisGraph v p
+    (g, _) = genesisGraphAndHeight v p
     cid = _chainId p
 
     mlog = newMerkleLog

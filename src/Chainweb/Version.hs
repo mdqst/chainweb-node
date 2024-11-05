@@ -74,7 +74,7 @@ module Chainweb.Version
     , genesisBlockTarget
     , genesisTime
     , genesisBlockHeight
-    , genesisGraph
+    , genesisGraphAndHeight
 
     -- * Typelevel ChainwebVersionName
     , ChainwebVersionT(..)
@@ -603,11 +603,8 @@ instance HasChainGraph (ChainwebVersion, BlockHeight) where
 -- It is enforced via the 'mkChainId' smart constructor for ChainId.)
 --
 genesisBlockHeight :: HasCallStack => ChainwebVersion -> ChainId -> BlockHeight
-genesisBlockHeight v c =
-    case measureValue' (flip isWebChain c) $ _versionGraphs v of
-        Top _ -> error $ "Invalid ChainId " <> show c
-        Between _ (h, _) -> h
-        Bottom _ -> BlockHeight 0
+genesisBlockHeight v c = snd $ genesisGraphAndHeight v c
+{-# inlinable genesisBlockHeight #-}
 
 -- | The genesis graph for a given Chain
 --
@@ -617,18 +614,21 @@ genesisBlockHeight v c =
 --   (We generally assume that this invariant holds throughout the code base.
 --   It is enforced via the 'mkChainId' smart constructor for ChainId.)
 --
-genesisGraph
+genesisGraphAndHeight
     :: HasCallStack
     => HasChainwebVersion v
     => HasChainId c
     => v
     -> c
-    -> ChainGraph
-genesisGraph v c =
-    case measureValue' (flip isWebChain c) $ _versionGraphs (_chainwebVersion v) of
-        Top _ -> error $ "Invalid ChainId " <> show (_chainId c)
-        Between _ (_, a) -> a
-        Bottom a -> a
+    -> (ChainGraph, BlockHeight)
+genesisGraphAndHeight v c =
+    case ruleFind (\_ g -> not (isWebChain g c)) $ _versionGraphs (_chainwebVersion v) of
+        BetweenZipper _ _ [] -> error
+            $ "Invalid ChainId " <> show (_chainId c)
+            <> " for chainweb version " <> show (_versionName (_chainwebVersion v))
+        BetweenZipper _ _ ((h, g):_) -> (g, h)
+        BottomZipper g _ -> (g, BlockHeight 0)
+{-# inlinable genesisGraphAndHeight #-}
 
 -------------------------------------------------------------------------- --
 -- Utilities for constructing chainweb versions
@@ -669,4 +669,3 @@ latestBehaviorAt v = foldlOf' behaviorChanges max 0 v + 1
         , versionUpgrades . folded . ifolded . asIndex
         , versionGraphs . to ruleHead . _1 . _Just
         ]
-

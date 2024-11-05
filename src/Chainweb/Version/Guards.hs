@@ -267,10 +267,9 @@ pactParserVersion v cid bh
     | otherwise = PactParserGenesis
 
 maxBlockGasLimit :: ChainwebVersion -> BlockHeight -> Maybe Natural
-maxBlockGasLimit v bh = case measureRule bh $ _versionMaxBlockGasLimit v of
-    Bottom limit -> limit
-    Top (_, limit) -> limit
-    Between (_, limit) _ -> limit
+maxBlockGasLimit v bh = case ruleFind (\h _ -> h == bh) (_versionMaxBlockGasLimit v) of
+    BetweenZipper _ (_, limit) _ -> limit
+    BottomZipper limit _ -> limit
 
 
 -- | Different versions of Chainweb allow different PPKSchemes.

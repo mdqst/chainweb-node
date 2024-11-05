@@ -462,10 +462,9 @@ verifiersAt v cid bh =
     M.restrictKeys allVerifierPlugins activeVerifierNames
     where
     activeVerifierNames =
-        case measureRule bh $ _versionVerifierPluginNames v ^?! onChain cid of
-            Bottom vs -> vs
-            Top (_, vs) -> vs
-            Between (_, vs) _ -> vs
+        case ruleFind (\h _ -> h == bh) $ _versionVerifierPluginNames v ^?! onChain cid of
+            BetweenZipper _ (_, vs) _ -> vs
+            BottomZipper vs _ -> vs
 
 -- the mappings from names to verifier plugins is global. the list of verifier
 -- plugins active in any particular block validation context is the only thing
