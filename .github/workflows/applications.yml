@@ -269,7 +269,7 @@ jobs:
       run: |
         export PATH="${PATH}:/usr/local/go/bin"
         sudo curl -L https://go.dev/dl/go1.23.3.linux-amd64.tar.gz -O
-        sudo rm -rf /usr/local/go && tar -C /usr/local -xzf go1.23.3.linux-amd64.tar.gz
+        sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf go1.23.3.linux-amd64.tar.gz
         go version
 
     - name: Install plonk verifier dependencies (Rust)
