@@ -276,8 +276,8 @@ jobs:
       if: startsWith(matrix.os, 'ubuntu-')
       run: |
         export PATH="${PATH}:/root/.cargo/bin"
-        sudo curl -sSf https://sh.rustup.rs | sh -s -- -y
-        sudo curl -LsSf https://get.nexte.st/latest/linux | tar zxf - -C ${CARGO_HOME:-/root/.cargo}/bin
+        curl -sSf https://sh.rustup.rs | sudo sh -s -- -y
+        curl -LsSf https://get.nexte.st/latest/linux | sudo tar zxf - -C ${CARGO_HOME:-/root/.cargo}/bin
         cargo version
         rustc --version
 
